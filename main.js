@@ -1,6 +1,8 @@
 // Required variables
-var curr_seconds = 25,
-	curr_minutes = '00';
+var session_minutes = 25,
+	session_seconds = '00',
+	curr_minutes,
+	curr_seconds;
 var minutes_interval, seconds_interval;
 var isTimerOn, isTimerNew; // knows state of timer when it is paused (paused timer = false, new timer = true)
 
@@ -10,8 +12,8 @@ var bell = new Audio('bell.mp3');
 
 // Starting template for the timer: set timer view as 25:00
 function template() {
-	curr_seconds = '00';
-	curr_minutes = 25;
+	curr_seconds = session_seconds;
+	curr_minutes = session_minutes;
 	document.getElementById('seconds').innerHTML = curr_seconds;
 	document.getElementById('minutes').innerHTML = curr_minutes;
 	isTimerNew = true;
@@ -42,7 +44,7 @@ function play() {
 		click_sound.play();
 
 		// Change the minutes and seconds to starting time
-		curr_minutes = 24;
+		curr_minutes = curr_minutes - 1;
 		curr_seconds = 59;
 		document.getElementById('minutes').innerHTML = curr_minutes;
 		document.getElementById('seconds').innerHTML = curr_seconds;
@@ -69,8 +71,8 @@ function play() {
 		document.getElementById('seconds').innerHTML = curr_seconds;
 
 		// End session is zero is reached
-		if (curr_seconds <= 50) {
-			if (curr_minutes <= 24) {
+		if (curr_seconds <= 0) {
+			if (curr_minutes <= 0) {
 				resetTimer();
 				bell.play();
 			}
@@ -100,14 +102,18 @@ function stopTimer() {
 }
 
 function setDuration() {
+	// input duration from user
 	var duration = 25;
-	askDuration();
-
-	function askDuration() {
-		duration = prompt('Enter number of minutes', 'Text');
-		duration = parseInt(duration);
-		if (isNaN(duration)) {
-			alert('You have not input a number');
-		}
+	duration = prompt('Enter number of minutes', 'Text');
+	duration = parseInt(duration);
+	if (isNaN(duration)) {
+		alert('You have not input a number');
+		return;
 	}
+
+	// set timer duration to input duration
+	resetTimer();
+	session_minutes = duration;
+	session_seconds = '00';
+	template();
 }
